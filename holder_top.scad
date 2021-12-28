@@ -6,15 +6,15 @@ module frame() {
     difference() {
         union() {
             difference() {
-                translate([-75, -lighter.y / 2 - 2, -(lighter.x - 5) + 5 ])
+                translate([-75, -lighter.y / 2 - 2, -lighter.x/2 - 2])
                 cube([
                     tank_h + 75, 
                     lighter.y + 4,
-                    lighter.x - 5
+                    lighter.x/2 + 7
                 ]);
                 
                 translate([0, -(lighter.y/2) -0.5, lighter.x/2 + 0.5])
-                rotate([0, 90, 0]) cube([lighter.x+1, lighter.y+1, lighter.z+1]);
+                rotate([0, 90, 0]) cube([lighter.x+1, lighter.y+1, tank_h + 5]);
             }
             
             // handle
@@ -43,10 +43,10 @@ module frame() {
         }
     
         // trigger hole
-        translate([-70, -3, -40]) cube([50, 6, 60]);
+        translate([-70, -3, -lighter.x/2 - 28]) cube([50, 6, lighter.x/2 + 40]);
         
         // lock hole
-        translate([-18, 1, -10]) cube([16, 20, 20]);
+        translate([-18, lighter.y/2 - 5, -10]) cube([16, 20, 20]);
     }
     
     //rails
@@ -74,17 +74,17 @@ module frame() {
        ]);
     
     // guard
-    translate([-70, -2.5, -45]) cube([48, 5, 3]);
+    translate([-70, -2.5, -lighter.x/2 - 33]) cube([48, 5, 3]);
 
     intersection() {    
-        translate([-48, -2.5, -15])
+        translate([-48, -2.5, -lighter.x/2 - 3])
         rotate([-90, 0, 0])
             difference() {
                 translate([2, -2, 0]) cylinder(5, 40, 40, $fn=100);
                 translate([0, 0, -1]) cylinder(7, 37, 37, $fn=100);
             }
 
-        translate([-20, 0, -29]) cube([50, 50, 32], true);
+        translate([-20, 0, -lighter.x/2 - 17]) cube([50, 50, 32], true);
     }
 }
 
@@ -109,8 +109,8 @@ module lighter_module() {
 module slide() {
     difference() {
         union() {
-            translate([lighter.z-28 , -(lighter.y + 8) / 2, -17]) 
-                cube([30, lighter.y + 8, 15]);
+            translate([lighter.z-28 , -(lighter.y + 8) / 2, -lighter.x/2 - 5]) 
+                cube([30, lighter.y + 8, button_l + 5]);
             
             hull() {
                 translate([-65, -(lighter.y + 8) / 2, -(lighter.x - 6) / 2 + 5]) 
@@ -122,20 +122,20 @@ module slide() {
         }
         
         // barrel
-        translate([-40, 0, -lighter.x /2 + lighter.y / 2  - 2.5])
-            rotate([0, 90, 0])
-            linear_extrude(lighter.z + 40)
-            union() {
-                 hull() {
-                    translate([-lighter.x + lighter.y - 2, 0, 0]) circle(lighter.y/2 + 0.5, $fn=50);
-                 }
-            }
+        hull() {
+            translate([-40, 0, -lighter.x /2 + lighter.y / 2  - 2.5])
+                rotate([0, 90, 0])
+                linear_extrude(lighter.z + 30)
+                translate([-lighter.x + lighter.y - 2, 0, 0]) circle(lighter.y/2 + 0.5, $fn=50);
+
+            translate([-40, -lighter.y/2 - 0.5, 0]) 
+                cube([lighter.z+30, lighter.y + 1, 1]);
+        }
         
         // frame cut
-        translate([(lighter.z + 20) / 2 - 50, 0, -(lighter.x / 2 + 5)/2 + 3.45])
-            cube([lighter.z + 80, lighter.y+5, 20.5], true);
-        
-            
+        translate([-80, -(lighter.y + 5)/2, -lighter.x/2 - 3.75])
+            cube([lighter.z + 80, lighter.y+5, lighter.x/2 + 9]);
+
         // rails cut
         mirror([0, -1, 0])
         translate([-56, lighter.y/2 + 2, 5.25])
@@ -152,16 +152,16 @@ module slide() {
                 [0, 0], [0, 2.5], [2.5, 2.5], [5, 0]
             ]);
             
-        translate([-68, lighter.y/2 + 1.5, -5])
-            cube([30, 3, 10]);
-        translate([-68, -lighter.y/2 - 4.5, -5])
-            cube([30, 3, 10]);
+        translate([-68, lighter.y/2 + 1.5, -lighter.x/2 + 0.25])
+            cube([30, 3, lighter.x / 2 + 5]);
+        translate([-68, -lighter.y/2 - 4.5, -lighter.x/2 + 0.25])
+            cube([30, 3, lighter.x / 2 + 5]);
             
-        translate([tank_h-82.5, lighter.y/2 + 1.5, -5]) cube([54, 3, 10]);
-        translate([tank_h-82.5, -lighter.y/2 - 4.5, -5]) cube([54, 3, 10]);
+        translate([-3.5, lighter.y/2 + 1.5, -lighter.x/2 + 0.25]) cube([tank_h - 25, 3, lighter.x / 2 + 5]);
+        translate([-3.5, -lighter.y/2 - 4.5, -lighter.x/2 + 0.25]) cube([tank_h - 25, 3, lighter.x / 2 + 5]);
         
         // lock cut
-        translate([-17.5, 6, -10]) cube([17, 5, 15.25]);
+        translate([-17.5, lighter.y / 2 + 1, -10]) cube([17, 5, 15.25]);
     }
     
     translate([-55, -2.5, -lighter.x / 2 - 5]) 
@@ -198,15 +198,13 @@ module trigger() {
 }
 
 module assembled() {
-    intersection() {
+    union() {
         // #translate([0, -90, -96]) cube([400, 200, 200], true);
         // translate([-50, 0, 10]) cube([50, 50, 50], true);
         // translate([-50, 0, 10]) cube([80, 50, 50], true);
-        union() {
-            %rotate([0, 90, 0]) lighter_module();
-            frame();
-            slide();
-        }
+        %rotate([0, 90, 0]) lighter_module();
+        frame();
+        slide();
     }
 }
 
@@ -226,8 +224,8 @@ module disassemble () {
     }
 }
 
-// assembled();
-disassemble();
+assembled();
+// disassemble();
 // pulled();
 //!intersection() {translate([-100, -20, -30]) cube([200, 40, 40]); frame();}
 // trigger();
